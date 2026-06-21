@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perspektīvas radošs pielietojums</title>
+<style>
+  :root{
+    --bg:#F7F3F2;
+    --surface:#FFFFFF;
+    --surface-soft:#FBF6F5;
+    --ink:#3C3735;
+    --ink-soft:#8A8480;
+    --line:#E8E0DD;
+    --pink:#D98DA0;
+    --pink-deep:#B5607A;
+    --pink-tint:#F7E2E8;
+    --pink-pale:#FCEEF1;
+    --gray-mid:#CCC5C0;
+    --gray-deep:#8C8580;
+    --gray-face:#D8D2CE;
+    --shadow: 0 6px 20px rgba(60,55,53,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Candara','Segoe UI',Calibri,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:1040px;margin:0 auto;padding:18px 18px 40px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background:linear-gradient(135deg,var(--pink-pale) 0%, var(--surface) 60%);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:28px 30px 24px;
+    overflow:hidden;
+    margin-bottom:18px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(72deg, rgba(181,96,122,0.06) 0px, rgba(181,96,122,0.06) 1px, transparent 1px, transparent 46px),
+      repeating-linear-gradient(108deg, rgba(140,133,128,0.06) 0px, rgba(140,133,128,0.06) 1px, transparent 1px, transparent 46px);
+    pointer-events:none;
+  }
+  .hero h1{
+    position:relative;
+    margin:0 0 6px;
+    font-size:clamp(22px,3.4vw,30px);
+    font-weight:700;
+    letter-spacing:0.2px;
+    color:var(--pink-deep);
+  }
+  .hero p{
+    position:relative;
+    margin:0;
+    color:var(--ink-soft);
+    font-size:15px;
+    max-width:640px;
+    line-height:1.5;
+  }
+
+  /* ---------- TABS ---------- */
+  .tabs{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .tab-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 18px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .tab-btn svg{width:18px;height:18px;flex:none;}
+  .tab-btn:hover{background:var(--pink-tint);color:var(--pink-deep);}
+  .tab-btn.active{
+    background:var(--pink-deep);
+    border-color:var(--pink-deep);
+    color:#fff;
+    box-shadow:var(--shadow);
+  }
+  .tab-btn:focus-visible{outline:3px solid var(--pink-deep); outline-offset:2px;}
+
+  /* ---------- PANELS ---------- */
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px;
+    box-shadow:var(--shadow);
+  }
+  .intro{
+    font-size:14.5px;
+    line-height:1.55;
+    color:var(--ink);
+    background:var(--pink-pale);
+    border:1px solid var(--pink-tint);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:18px;
+  }
+  .intro b{color:var(--pink-deep);}
+
+  .layout{
+    display:flex;
+    gap:24px;
+    flex-wrap:wrap;
+    align-items:flex-start;
+  }
+  .stage-col{flex:1 1 360px; min-width:300px;}
+  .controls-col{flex:1 1 240px; min-width:230px;}
+
+  .label{
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    color:var(--gray-deep);
+    font-weight:700;
+    margin:0 0 8px;
+  }
+  .caption-box{
+    margin-top:14px;
+    background:var(--surface-soft);
+    border:1px dashed var(--gray-mid);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:13.5px;
+    color:var(--ink);
+    min-height:20px;
+  }
+
+  .btn-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
+  .pill{
+    border:1px solid var(--line);
+    background:var(--surface-soft);
+    color:var(--ink);
+    padding:7px 13px;
+    border-radius:999px;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .pill:hover{background:var(--pink-tint); border-color:var(--pink);}
+  .pill.active{background:var(--pink); border-color:var(--pink); color:#fff;}
+
+  .slider-block{margin-bottom:16px;}
+  .slider-block .label-row{display:flex; justify-content:space-between; font-size:13px; color:var(--ink-soft); margin-bottom:6px;}
+  input[type="range"]{
+    width:100%;
+    accent-color:var(--pink-deep);
+  }
+
+  .swatches{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+  .swatch{
+    width:26px;height:26px;border-radius:50%;
+    border:2px solid var(--surface);
+    box-shadow:0 0 0 1px var(--line);
+    cursor:pointer;
+  }
+  .swatch.active{box-shadow:0 0 0 2px var(--pink-deep);}
+
+  /* ---------- TAB 1: VIEWPOINT ---------- */
+  .scene3d{
+    perspective:800px;
+    width:100%;
+    height:320px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:none;
+    cursor:grab;
+    background:radial-gradient(circle at 50% 30%, #fff 0%, var(--surface-soft) 75%);
+    border-radius:14px;
+    border:1px solid var(--line);
+  }
+  .scene3d:active{cursor:grabbing;}
+  .cube-rig{
+    position:relative;
+    width:180px; height:200px;
+    transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.2,.7,.3,1);
+  }
+  .face{
+    position:absolute;
+    left:50%; top:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .face.front{width:180px;height:200px; margin:-100px 0 0 -90px; background:var(--pink-pale); transform:translateZ(70px); border:1px solid rgba(0,0,0,0.06);}
+  .face.back{width:180px;height:200px; margin:-100px 0 0 -90px; background:var(--gray-face); transform:rotateY(180deg) translateZ(70px);}
+  .face.right{width:140px;height:200px; margin:-100px 0 0 -70px; background:var(--gray-mid); transform:rotateY(90deg) translateZ(90px);}
+  .face.left{width:140px;height:200px; margin:-100px 0 0 -70px; background:var(--gray-mid); transform:rotateY(-90deg) translateZ(90px);}
+  .face.top{width:180px;height:140px; margin:-70px 0 0 -90px; background:var(--pink); transform:rotateX(90deg) translateZ(100px);}
+  .face.bottom{width:180px;height:140px; margin:-70px 0 0 -90px; background:#6f6864; transform:rotateX(-90deg) translateZ(100px);}
+  .ground{
+    position:absolute; left:50%; top:50%;
+    width:420px; height:420px;
+    margin:-210px 0 0 -210px;
+    background:
+      repeating-linear-gradient(0deg, rgba(140,133,128,0.18) 0 1px, transparent 1px 36px),
+      repeating-linear-gradient(90deg, rgba(140,133,128,0.18) 0 1px, transparent 1px 36px),
+      var(--surface-soft);
+    transform: rotateX(-90deg) translateZ(100px);
+  }
+  .door{position:absolute; bottom:0; left:50%; width:34px; height:64px; margin-left:-17px; background:var(--ink-soft); border-radius:4px 4px 0 0;}
+  .win{position:absolute; width:22px; height:22px; background:#fff; border:2px solid var(--pink-deep); border-radius:3px;}
+  .win.w1{top:18px; left:20px;} .win.w2{top:18px; right:20px;}
+  .win.w3{top:56px; left:20px;} .win.w4{top:56px; right:20px;}
+  .win.side{top:75px; left:50%; margin-left:-11px;}
+  .drag-hint{font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:8px;}
+
+  /* ---------- TAB 2: ANAMORPHIC ---------- */
+  canvas{display:block; border-radius:12px; border:1px solid var(--line); touch-action:none;}
+  #drawCanvas{background:#fff; cursor:crosshair;}
+  .ground-stage{
+    perspective:900px;
+    perspective-origin:50% 15%;
+    width:100%;
+    display:flex; justify-content:center;
+    padding:20px 0 10px;
+    background:linear-gradient(180deg,var(--surface-soft) 0%, var(--bg) 100%);
+    border-radius:12px;
+    border:1px solid var(--line);
+  }
+  .ground-wrap{
+    width:300px;height:300px;
+    transform-origin:50% 0%;
+    transform:rotateX(60deg);
+    box-shadow:0 30px 40px -20px rgba(60,55,53,0.35);
+  }
+  #mirrorCanvas{border-radius:8px;}
+  .two-col{display:flex; gap:20px; flex-wrap:wrap;}
+  .two-col > div{flex:1 1 300px;}
+
+  /* ---------- TAB 3: OP ART ---------- */
+  .opart-wrap{display:flex; justify-content:center;}
+
+  footer{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:12px;
+    margin-top:24px;
+  }
+
+  @media (max-width:700px){
+    .layout{flex-direction:column;}
+    .scene3d{height:260px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .panel.active{animation:none;}
+    .cube-rig{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hero">
+    <h1>Perspektīvas radošs pielietojums</h1>
+    <p>Eksperimentē ar skatu punktiem, anamorfo mākslu un opārtu — un atklāj, kā mākslinieki izmanto perspektīvu, lai pārsteigtu un “apmānītu” skatītāja aci.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="viewpoint" role="tab" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      Skatpunkts
+    </button>
+    <button class="tab-btn" data-tab="anamorphic" role="tab" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 6h14l-2 12H7L5 6Z"/><path d="M9 6v12M15 6v12"/></svg>
+      Anamorfā māksla
+    </button>
+    <button class="tab-btn" data-tab="opart" role="tab" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>
+      Opārts
+    </button>
+  </div>
+
+  <!-- ============ TAB 1: VIEWPOINT ============ -->
+  <section class="panel active" data-panel="viewpoint">
+    <div class="card">
+      <p class="intro"><b>Viens un tas pats objekts izskatās pavisam citādi atkarībā no skatu punkta.</b> No apakšas (tārpa skats) ēka šķiet milzīga un varena, no augšas (putna lidojuma skats) — maza un tāla. Pagriezi māju pats, velkot ar peli, vai izmēģini gatavus skatu punktus.</p>
+
+      <div class="layout">
+        <div class="stage-col">
+          <div class="scene3d" id="scene3d">
+            <div class="cube-rig" id="cubeRig">
+              <div class="ground"></div>
+              <div class="face front">
+                <div class="door"></div>
+                <div class="win w1"></div>
+                <div class="win w2"></div>
+                <div class="win w3"></div>
+                <div class="win w4"></div>
+              </div>
+              <div class="face back"></div>
+              <div class="face right"><div class="win side"></div></div>
+              <div class="face left"><div class="win side"></div></div>
+              <div class="face top"></div>
+              <div class="face bottom"></div>
+            </div>
+          </div>
+          <p class="drag-hint">✋ Velc ar peli vai pirkstu, lai pagrieztu ēku pats</p>
+        </div>
+
+        <div class="controls-col">
+          <p class="label">Gatavi skatu punkti</p>
+          <div class="btn-row" id="presetRow">
+            <button class="pill active" data-rx="-15" data-ry="-25" data-name="No priekšas / sāniem">No priekšas</button>
+            <button class="pill" data-rx="55" data-ry="-25" data-name="Tārpa skats">Tārpa skats</button>
+            <button class="pill" data-rx="-65" data-ry="-25" data-name="Putna lidojuma skats">Putna skats</button>
+            <button class="pill" data-rx="-10" data-ry="-70" data-name="Stūra skats">No stūra</button>
+          </div>
+
+          <div class="slider-block">
+            <div class="label-row"><span>Tuvāk</span><span>Skatu attālums</span><span>Tālāk</span></div>
+            <input type="range" id="perspRange" min="350" max="1500" value="800">
+          </div>
+
+          <div class="caption-box" id="viewCaption">Skats no priekšas — pierasts, dabisks skatu punkts.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2: ANAMORPHIC ============ -->
+  <section class="panel" data-panel="anamorphic">
+    <div class="card">
+      <p class="intro"><b>Renesanses laikā mākslinieki iemācījās “apmānīt aci”</b> (trompe l'oeil), zīmējot uz plakanām virsmām tā, it kā tās būtu trīsdimensionālas. Mūsdienu mākslinieki, piemēram, Maikls Mērfijs, šo principu izmanto milzīgās instalācijās un ielu mākslā, kas pareizi “salīp” tikai no viena, precīza skatu punkta. Uzzīmē vienkāršu zīmējumu un vēro, kā tas izstiepjas, ja to “noliek” uz grīdas!</p>
+
+      <div class="two-col">
+        <div>
+          <p class="label">Tavs zīmējums</p>
+          <div class="swatches" id="swatches"></div>
+          <div class="slider-block">
+            <div class="label-row"><span>Otas biezums</span><span id="brushVal">6 px</span></div>
+            <input type="range" id="brushRange" min="2" max="22" value="6">
+          </div>
+          <div class="btn-row">
+            <button class="pill" id="clearBtn">🗑 Notīrīt</button>
+          </div>
+          <canvas id="drawCanvas" width="300" height="300"></canvas>
+        </div>
+
+        <div>
+          <p class="label">Skats “no grīdas” — anamorfā projekcija</p>
+          <div class="ground-stage">
+            <div class="ground-wrap" id="groundWrap">
+              <canvas id="mirrorCanvas" width="300" height="300"></canvas>
+            </div>
+          </div>
+          <div class="slider-block" style="margin-top:14px;">
+            <div class="label-row"><span>Plakans</span><span>Skatu leņķis</span><span>Stāvs</span></div>
+            <input type="range" id="angleRange" min="20" max="80" value="60">
+          </div>
+          <div class="caption-box">Jo straujāks leņķis, jo vairāk zīmējums izstiepjas tālumā — tieši tā strādā ielu mākslinieki, plānojot savus 3D zīmējumus.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 3: OP ART ============ -->
+  <section class="panel" data-panel="opart">
+    <div class="card">
+      <p class="intro"><b>20. gadsimta 60. gados popularitāti ieguva opārts</b> — ģeometriski raksti, kas maldina aci ar kustības, vibrācijas vai dziļuma sajūtu. Tā meistari, piemēram, Marina Apolonio un Ričards Anuškevičs, izmantoja matemātiku un atkārtotas formas, lai radītu hipnotiskus efektus. Izveido savu opārta darbu!</p>
+
+      <div class="layout">
+        <div class="controls-col" style="order:2; flex:1 1 240px;">
+          <p class="label">Raksta veids</p>
+          <div class="btn-row" id="patternRow">
+            <button class="pill active" data-pattern="lines">Viļņotas līnijas</button>
+            <button class="pill" data-pattern="circles">Koncentriski apļi</button>
+            <button class="pill" data-pattern="grid">Vibrējošs režģis</button>
+          </div>
+
+          <div class="slider-block">
+            <div class="label-row"><span>Reti</span><span>Blīvums</span><span>Bieži</span></div>
+            <input type="range" id="densityRange" min="6" max="40" value="18">
+          </div>
+          <div class="slider-block">
+            <div class="label-row"><span>Mierīgs</span><span>Izliekums</span><span>Spēcīgs</span></div>
+            <input type="range" id="distortRange" min="0" max="100" value="45">
+          </div>
+
+          <p class="label">Krāsas</p>
+          <div class="btn-row" id="colorRow">
+            <button class="pill active" data-mode="duo">Pelēks + rozā</button>
+            <button class="pill" data-mode="pink">Rozā toņi</button>
+            <button class="pill" data-mode="gray">Pelēkie toņi</button>
+            <button class="pill" data-mode="blue_gray">Zils + pelēks</button>
+            <button class="pill" data-mode="green_red">Zaļš + sarkans</button>
+            <button class="pill" data-mode="yellow_purple">Dzeltens + violets</button>
+          </div>
+
+          <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink-soft); margin:10px 0 16px;">
+            <input type="checkbox" id="motionToggle"> Kinētiska kustība (lēna animācija)
+          </label>
+        </div>
+
+        <div class="stage-col opart-wrap" style="order:1;">
+          <canvas id="opartCanvas" width="360" height="360"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Jaunmārupes pamatskola · Vizuālā māksla, 6. klase · 6.5. Perspektīvas radošs pielietojums</footer>
+</div>
+
+<script>
+/* ============ TAB SWITCHING ============ */
+const tabBtns = document.querySelectorAll('.tab-btn');
+const panels = document.querySelectorAll('.panel');
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabBtns.forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-selected','false');});
+    panels.forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    document.querySelector('.panel[data-panel="'+btn.dataset.tab+'"]').classList.add('active');
+  });
+});
+
+/* ============ TAB 1: VIEWPOINT (3D CUBE) ============ */
+(function(){
+  const scene = document.getElementById('scene3d');
+  const rig = document.getElementById('cubeRig');
+  const caption = document.getElementById('viewCaption');
+  const presetRow = document.getElementById('presetRow');
+  const perspRange = document.getElementById('perspRange');
+
+  let rx = -15, ry = -25;
+  let dragging = false, lastX = 0, lastY = 0, smooth = true;
+
+  function applyTransform(){
+    rig.style.transition = smooth ? 'transform .6s cubic-bezier(.2,.7,.3,1)' : 'none';
+    rig.style.transform = 'rotateX('+rx+'deg) rotateY('+ry+'deg)';
+  }
+  function setCaptionFromAngle(){
+    if(rx > 35){ caption.textContent = 'Tārpa skats — no apakšas ēka šķiet milzīga un iespaidīga!'; }
+    else if(rx < -45){ caption.textContent = 'Putna lidojuma skats — no augšas ēka šķiet maza un tāla.'; }
+    else { caption.textContent = 'Skats no priekšas / sāniem — pierasts, dabisks skatu punkts.'; }
+  }
+
+  presetRow.addEventListener('click', e=>{
+    const b = e.target.closest('.pill');
+    if(!b) return;
+    [...presetRow.children].forEach(c=>c.classList.remove('active'));
+    b.classList.add('active');
+    rx = parseFloat(b.dataset.rx); ry = parseFloat(b.dataset.ry);
+    smooth = true; applyTransform();
+    caption.textContent = b.dataset.name + ' — ' + (rx>35 ? 'objekts šķiet milzīgs un varens.' : rx<-45 ? 'objekts šķiet mazāks un tālāks.' : 'pazīstams, līdzsvarots skats.');
+  });
+
+  function pointerDown(x,y){ dragging = true; lastX = x; lastY = y; smooth = false; scene.style.cursor='grabbing'; }
+  function pointerMove(x,y){
+    if(!dragging) return;
+    const dx = x - lastX, dy = y - lastY;
+    ry += dx * 0.4;
+    rx -= dy * 0.4;
+    rx = Math.max(-85, Math.min(85, rx));
+    lastX = x; lastY = y;
+    applyTransform();
+    setCaptionFromAngle();
+    [...presetRow.children].forEach(c=>c.classList.remove('active'));
+  }
+  function pointerUp(){ dragging = false; smooth = true; scene.style.cursor='grab'; }
+
+  scene.addEventListener('mousedown', e=>pointerDown(e.clientX, e.clientY));
+  window.addEventListener('mousemove', e=>pointerMove(e.clientX, e.clientY));
+  window.addEventListener('mouseup', pointerUp);
+
+  scene.addEventListener('touchstart', e=>{ const t=e.touches[0]; pointerDown(t.clientX,t.clientY); }, {passive:true});
+  scene.addEventListener('touchmove', e=>{ const t=e.touches[0]; pointerMove(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
+  scene.addEventListener('touchend', pointerUp);
+
+  perspRange.addEventListener('input', ()=>{ scene.style.perspective = perspRange.value+'px'; });
+
+  applyTransform();
+})();
+
+/* ============ TAB 2: ANAMORPHIC DRAWING ============ */
+(function(){
+  const canvas = document.getElementById('drawCanvas');
+  const ctx = canvas.getContext('2d');
+  const mirror = document.getElementById('mirrorCanvas');
+  const mctx = mirror.getContext('2d');
+  const groundWrap = document.getElementById('groundWrap');
+  const angleRange = document.getElementById('angleRange');
+  const brushRange = document.getElementById('brushRange');
+  const brushVal = document.getElementById('brushVal');
+  const clearBtn = document.getElementById('clearBtn');
+  const swatchesEl = document.getElementById('swatches');
+
+  const colors = ['#3C3735','#8C8580','#FFFFFF','#D98DA0','#B5607A','#F7E2E8','#CCC5C0'];
+  let currentColor = '#3C3735';
+  colors.forEach((c,i)=>{
+    const s = document.createElement('div');
+    s.className = 'swatch' + (i===0 ? ' active':'');
+    s.style.background = c;
+    s.addEventListener('click', ()=>{
+      [...swatchesEl.children].forEach(x=>x.classList.remove('active'));
+      s.classList.add('active');
+      currentColor = c;
+    });
+    swatchesEl.appendChild(s);
+  });
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  drawGuideGrid();
+
+  function drawGuideGrid(){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(140,133,128,0.18)';
+    ctx.lineWidth = 1;
+    for(let i=1;i<4;i++){
+      const p = i*canvas.width/4;
+      ctx.beginPath(); ctx.moveTo(p,0); ctx.lineTo(p,canvas.height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,p); ctx.lineTo(canvas.width,p); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  let drawing = false, lastPt = null;
+  function getPos(e){
+    const r = canvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    return {x: cx * canvas.width / r.width, y: cy * canvas.height / r.height};
+  }
+  function start(e){ drawing = true; lastPt = getPos(e); }
+  function move(e){
+    if(!drawing) return;
+    const p = getPos(e);
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = brushRange.value;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(lastPt.x,lastPt.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+    lastPt = p;
+    updateMirror();
+    if(e.touches) e.preventDefault();
+  }
+  function end(){ drawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', e=>{ start(e); e.preventDefault(); }, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+
+  brushRange.addEventListener('input', ()=>{ brushVal.textContent = brushRange.value+' px'; });
+
+  clearBtn.addEventListener('click', ()=>{
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    drawGuideGrid();
+    updateMirror();
+  });
+
+  function updateMirror(){
+    mctx.clearRect(0,0,mirror.width,mirror.height);
+    mctx.drawImage(canvas,0,0);
+  }
+  updateMirror();
+
+  angleRange.addEventListener('input', ()=>{
+    groundWrap.style.transform = 'rotateX('+angleRange.value+'deg)';
+  });
+})();
+
+/* ============ TAB 3: OP ART GENERATOR ============ */
+(function(){
+  const canvas = document.getElementById('opartCanvas');
+  const ctx = canvas.getContext('2d');
+  const patternRow = document.getElementById('patternRow');
+  const colorRow = document.getElementById('colorRow');
+  const densityRange = document.getElementById('densityRange');
+  const distortRange = document.getElementById('distortRange');
+  const motionToggle = document.getElementById('motionToggle');
+
+  const palettes = {
+    duo: ['#3C3735','#D98DA0','#CCC5C0','#B5607A'],
+    pink: ['#FCEEF1','#F7C9D6','#D98DA0','#B5607A'],
+    gray: ['#F2EFED','#CCC5C0','#8C8580','#3C3735'],
+    blue_gray: ['#3C3735','#6FA8C9','#CCC5C0','#2E5F7A'],
+    green_red: ['#F2D9D6','#B5453C','#CFE3C9','#3F7D4F'],
+    yellow_purple: ['#FBEFB8','#D9A23B','#E3D3EC','#8B5FA0']
+  };
+
+  let pattern = 'lines', colorMode = 'duo', phase = 0, animating = false;
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2;
+
+  patternRow.addEventListener('click', e=>{
+    const b = e.target.closest('.pill'); if(!b) return;
+    [...patternRow.children].forEach(c=>c.classList.remove('active'));
+    b.classList.add('active');
+    pattern = b.dataset.pattern;
+    render();
+  });
+  colorRow.addEventListener('click', e=>{
+    const b = e.target.closest('.pill'); if(!b) return;
+    [...colorRow.children].forEach(c=>c.classList.remove('active'));
+    b.classList.add('active');
+    colorMode = b.dataset.mode;
+    render();
+  });
+  densityRange.addEventListener('input', render);
+  distortRange.addEventListener('input', render);
+  motionToggle.addEventListener('change', ()=>{
+    animating = motionToggle.checked;
+    if(animating) requestAnimationFrame(loop);
+  });
+
+  function loop(){
+    if(!animating) return;
+    phase += 0.018;
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  function render(){
+    const N = parseInt(densityRange.value,10);
+    const amp = parseInt(distortRange.value,10) / 100;
+    const cols = palettes[colorMode];
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,W,H);
+
+    if(pattern === 'lines') drawLines(N, amp, cols);
+    else if(pattern === 'circles') drawCircles(N, amp, cols);
+    else drawGrid(N, amp, cols);
+  }
+
+  function drawLines(N, amp, cols){
+    const base = W / N;
+    let x = 0, i = 0;
+    while(x < W){
+      const w = base * (0.35 + 0.65 * (0.5 + 0.5*Math.sin((x/W)*Math.PI*6 + phase)));
+      ctx.fillStyle = cols[i % cols.length];
+      const stretch = 1 + amp * 1.4;
+      ctx.fillRect(x, 0, Math.max(1, w*stretch*0.6), H);
+      x += Math.max(2, w*stretch*0.6);
+      i++;
+    }
+  }
+
+  function drawCircles(N, amp, cols){
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(phase);
+    const maxR = Math.min(W,H)/2 - 4;
+    for(let i=N; i>=1; i--){
+      const r = maxR * i / N;
+      const ry = r * (1 - amp*0.5);
+      ctx.fillStyle = cols[i % cols.length];
+      ctx.beginPath();
+      ctx.ellipse(0,0,r,ry,0,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawGrid(N, amp, cols){
+    const cell = W / N;
+    for(let row=0; row<N; row++){
+      for(let col=0; col<N; col++){
+        const px = col*cell + cell/2;
+        const py = row*cell + cell/2;
+        const dist = Math.hypot(px-cx, py-cy) / (Math.min(W,H)/2);
+        const scale = 0.35 + 0.65 * Math.abs(Math.sin(dist*Math.PI*2.2 + phase));
+        const size = cell * (0.4 + amp*0.55) * scale;
+        ctx.fillStyle = cols[(row+col) % cols.length];
+        ctx.fillRect(px - size/2, py - size/2, size, size);
+      }
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
